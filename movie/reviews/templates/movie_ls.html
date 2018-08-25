@@ -1,0 +1,46 @@
+{# reviews/templates/movie_ls.html #}
+{% load modulus %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title> 電影列表 </title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{% url 'movie_ls' %}">電影列表</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  {% for movie in movies %}
+  
+  {% ifequal forloop.counter0|modulus:4 0 %}
+    <div class="row">
+  {% endifequal %}
+
+  <div class="col-sm-3">
+    <div class="movie">
+      <img id="img" src="{{ movie.image }}" height="150", weight='100'>
+      <h5 id="title"> 
+        <a href="{% url 'movie_info' pk=movie.movie_id %}"> {{ movie.title }} </a> 
+      </h5>
+    </div>
+  </div>
+
+  {% ifequal forloop.counter0|modulus:4 3 %}
+    </div>
+  {% endifequal %}
+
+  {% endfor %}
+</div>
+
+</body>
+</html>

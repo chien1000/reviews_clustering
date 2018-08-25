@@ -1,0 +1,102 @@
+{# reviews/templates/movie_info.html #}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title> {{ movie.name }} </title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Custom CSS -->
+<style type="text/css">
+  
+  .highlight {
+    color: red;
+    font-weight: 900;
+  }
+
+</style>
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{% url 'movie_ls' %}">電影列表</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+      <img id="img" src="{{ movie.image }}" height="300", weight='200'>
+    </div>
+    <div class="col-sm-8">
+        <h4 id='title'> {{ movie.title }} </h4>
+        <h4 id='eng_title'> {{ movie.title_original }} </h4>
+        <p id='director'> 導演: {{ movie.director }} </p>
+        <p id='cast'> 演員: {{ movie.cast }} </p>
+        <p id='time_length'> 片長: {{ movie.length }} </p>
+        <p id='date'> 上映日期: {{ movie.date }} </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <ul class="nav nav-tabs">
+      {% for tag_id, tag_name in movie.labels %}
+        <li class='label-tab'><a tab-id='{{ tag_id }}' data-toggle="tab" href="#tag{{ tag_id }}"> {{ tag_name }} </a></li>
+      {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+      
+      {% for tag_id, tag_name in movie.labels %}
+        <div id="tag{{ tag_id }}" class="tab-pane fade">
+          <div id='review-block-{{ tag_id }}'> 
+            <table class="table table-striped">
+            <tbody id='review-table-{{ tag_id }}'>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function add_review(lable_id, content, highlight_sent, highlight_pos){
+    if (!content || !content.length) { return; }
+    if (highlight_pos != -1) {
+        var review = [content.slice(0, highlight_pos), '<span class="highlight">', highlight_sent, '</span>', content.slice(highlight_pos + highlight_sent.length)].join('');
+        var s = "<tr><td>" + review + "</td></tr>"
+        $('#review-table-'+lable_id).append(s)
+    }
+  }  
+
+  //click label
+  $(".label-tab").on("click", 'a', function(event) {
+
+      var label_id = ($(event.target).attr('tab-id'));
+      var get_label_href = "{% url 'label_info' %}"+"?movie_id=" + {{ movie.movie_id }} +"&label_id="+label_id;
+
+      $.get(get_label_href, function(data) {
+          var json = JSON.parse(data);
+
+          for(var i in json){
+              var review = json[i].review;
+              var highlight_sent = json[i].highlight_sent;
+              var highlight_pos = json[i].highlight_pos;
+
+              add_review(label_id, review, highlight_sent, highlight_pos);
+          }
+
+      });
+    });
+
+</script>
+</body>
+
+</html>
