@@ -1,4 +1,4 @@
-Django==2.1
+Django>=2.1.6
 gensim==3.3.0
 jieba==0.39
 numpy==1.14.0
